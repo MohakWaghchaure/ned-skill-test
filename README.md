@@ -20,10 +20,12 @@ Follow these steps to set up and run the project locally:
    ```bash
    git clone https://github.com/MohakWaghchaure/ned-skill-test.git
 
-Commands: 
+Commands to run the project: 
 
 cd ned-skill-test
+
 flutter pub get
+
 flutter run
 
 A few resources to get you started if this is your first Flutter project:
