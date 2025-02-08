@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ned_skill_test
 
 A new Flutter project.
@@ -14,3 +15,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# ned-help-assignment
+>>>>>>> e52fb190a86917d6ebbf259ba0fcd74b1a8c6c63
