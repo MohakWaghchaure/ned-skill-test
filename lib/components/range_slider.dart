@@ -1,38 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CustomRangeSlider extends StatefulWidget {
-  const CustomRangeSlider({super.key});
+  final String minValue;
+  final String maxValue;
+
+  const CustomRangeSlider(
+      {super.key, required this.minValue, required this.maxValue});
 
   @override
   State<CustomRangeSlider> createState() => _CustomRangeSliderState();
 }
 
 class _CustomRangeSliderState extends State<CustomRangeSlider> {
-  double _sliderValue = 50;
+  late double minValue;
+  late double maxValue;
+  late double _sliderValue;
+
+  @override
+  void initState() {
+    super.initState();
+    minValue = double.parse(widget.minValue);
+    maxValue = double.parse(widget.maxValue);
+    _sliderValue = maxValue; // Set initial slider value to maxValue
+  }
+
+  String formatNumber(double number) {
+    final formatter = NumberFormat('#,###');
+    return '\$${formatter.format(number)}';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(0),
+      padding: EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+              padding: EdgeInsets.symmetric(vertical: 5),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('\$50,000'), Text('\$83,333')],
+                    children: [
+                      Text(
+                        formatNumber(minValue), // Remove decimals
+                      ),
+                      Text(
+                        formatNumber(maxValue), // Remove decimals
+                      ),
+                    ],
                   ),
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.zero,
                     child: Slider(
                       value: _sliderValue,
-                      min: 0,
-                      max: 100,
+                      min: minValue,
+                      max: maxValue,
                       onChanged: (value) {
                         setState(() {
                           _sliderValue = value;
@@ -42,41 +69,30 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
                       inactiveColor: Colors.grey,
                       thumbColor: Colors.blue,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           ),
           Container(
             padding: EdgeInsets.all(0),
-            margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            margin: EdgeInsets.only(left: 20),
             height: 50,
             width: 80,
             decoration: BoxDecoration(
-              color: Colors.grey[200], // Set background color if needed
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(0),
-              ),
-              border: Border.all(
-                color: Colors
-                    .transparent, // No border color, or set any desired color
-                width: 0, // No border width
-              ),
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
               child: Text(
-                '\$${(50000 + (_sliderValue * 333.33)).toStringAsFixed(0)}',
+                formatNumber(_sliderValue), // Display dynamic slider value
                 style: TextStyle(
-                  // fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
