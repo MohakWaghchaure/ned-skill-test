@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ned_skill_test/components/duration_select.dart';
 import 'package:ned_skill_test/components/radio_buttons.dart';
 import 'package:ned_skill_test/components/range_slider.dart';
@@ -6,8 +7,10 @@ import 'package:ned_skill_test/components/select_table.dart';
 
 class CustomFinanceCard extends StatefulWidget {
   final List<dynamic> apiData;
+  final Function(String) updateEnteredRevenue;
 
-  const CustomFinanceCard({super.key, required this.apiData});
+  const CustomFinanceCard(
+      {super.key, required this.apiData, required this.updateEnteredRevenue});
 
   @override
   State<CustomFinanceCard> createState() => _CustomFinanceCardState();
@@ -25,6 +28,29 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
   Map<String, dynamic> fundingAmountMinData = {};
   Map<String, dynamic> revenuePercentageMinData = {};
   Map<String, dynamic> revenuePercentageMaxData = {};
+
+  // Store the entered revenue
+  String enteredRevenue = '0';
+
+  // Store the slider value and the max value based on entered revenue
+  double sliderValue = 0;
+  double maxSliderValue = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize values based on enteredRevenue
+    enteredRevenueHandler();
+  }
+
+  void enteredRevenueHandler() {
+    double revenue = double.tryParse(enteredRevenue) ?? 0;
+    setState(() {
+      maxSliderValue =
+          revenue / 3; // Max slider value is 1/3 of entered revenue
+      sliderValue = maxSliderValue; // Default slider value
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,21 +123,29 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
             ),
             SizedBox(height: 10),
             Text(
-              '${revenueAmountData.isEmpty ? 'No value provided' : revenueAmountData['label']}',
+              revenueAmountData.isEmpty
+                  ? 'No value provided'
+                  : revenueAmountData['label'],
             ),
             SizedBox(height: 10),
             TextField(
               decoration: InputDecoration(
-                prefixText: "\$ ",
+                prefix: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: Text(
+                    "\$",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
                 hintText: "250,000",
-                border: InputBorder.none, // Remove border completely
+                border: InputBorder.none,
                 filled: true,
-                fillColor: const Color.fromARGB(
-                    255, 229, 229, 229), // Background color
-                contentPadding: EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12), // Padding inside the text field
-                // The decoration for the radius
+                fillColor: const Color.fromARGB(255, 229, 229, 229),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10),
@@ -119,7 +153,7 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                     bottomLeft: Radius.circular(0),
                     bottomRight: Radius.circular(0),
                   ),
-                  borderSide: BorderSide.none, // No border side
+                  borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.only(
@@ -128,19 +162,42 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                     bottomLeft: Radius.circular(0),
                     bottomRight: Radius.circular(0),
                   ),
-                  borderSide: BorderSide.none, // No border side
+                  borderSide: BorderSide.none,
                 ),
               ),
               keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // Allow only numbers
+              ],
+              onChanged: (value) {
+                enteredRevenue = value.isEmpty ? '0' : value;
+                enteredRevenueHandler();
+                widget.updateEnteredRevenue(enteredRevenue);
+              },
             ),
             SizedBox(height: 10),
             Text(
-              '${fundingAmountData.isEmpty ? 'No value provided' : fundingAmountData['label']}',
+              fundingAmountData.isEmpty
+                  ? 'No value provided'
+                  : fundingAmountData['label'],
             ),
             SizedBox(height: 10),
             CustomRangeSlider(
-                minValue: fundingAmountMinData['value'],
-                maxValue: fundingAmountMaxData['value']),
+              minValue: fundingAmountMinData.isNotEmpty
+                  ? fundingAmountMinData['value']
+                  : 0.0,
+              maxValue: fundingAmountMaxData.isNotEmpty
+                  ? fundingAmountMaxData['value']
+                  : 100.0,
+              // enteredRevenue: enteredRevenue,
+              // onSliderChanged: (newValue) {
+              //   setState(() {
+              //     sliderValue = newValue;
+              //     enteredRevenue =
+              //         newValue.toStringAsFixed(0); // Update the TextField
+              //   });
+              // },
+            ),
             SizedBox(height: 10),
             Container(
               padding: EdgeInsets.all(0),
@@ -150,9 +207,7 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                   SizedBox(height: 10, width: 10),
                   Text(
                     '7.56%',
-                    // (0.156 / 6.2055 / revenue_amount) * (funding_amount * 10)
                     style: TextStyle(
-                      // fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
                     ),
@@ -165,10 +220,10 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
               padding: EdgeInsets.all(0),
               child: Row(
                 children: [
-                  Text('Revenue Shared Frequency'),
+                  Text('${revenueSharedFrequencyData['label']}:'),
                   SizedBox(height: 10, width: 10),
-                  // ----------- Radio Buttons Code ---------------
-                  RadioButtons(),
+                  RadioButtons(
+                      revenueFrequency: revenueSharedFrequencyData['value']),
                 ],
               ),
             ),
@@ -177,10 +232,10 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
               padding: EdgeInsets.all(0),
               child: Row(
                 children: [
-                  Text('Desired Repayment Delay'),
+                  Text('${desiredRepaymentDelay['label']}:'),
                   SizedBox(height: 10, width: 10),
-                  // ------------ Select Input -----------------
-                  CustomDurationSelect(),
+                  CustomDurationSelect(
+                      repaymentDelay: desiredRepaymentDelay['value']),
                 ],
               ),
             ),
@@ -192,11 +247,11 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('What will you use the funds for?'),
-                    SizedBox(height: 10, width: 10),
-                    // ------------ Select Table -----------------
+                    Text('${useOfFundsData['label']}'),
+                    SizedBox(height: 10),
                     Expanded(
-                      child: SelectOptionAddRowTable(),
+                      child: SelectOptionAddRowTable(
+                          useOfFunds: useOfFundsData['value']),
                     ),
                   ],
                 ),

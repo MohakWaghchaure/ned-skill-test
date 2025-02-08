@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SelectOptionAddRowTable extends StatefulWidget {
-  const SelectOptionAddRowTable({super.key});
+  final String useOfFunds;
+  const SelectOptionAddRowTable({super.key, required this.useOfFunds});
 
   @override
   State<SelectOptionAddRowTable> createState() =>
@@ -10,13 +12,8 @@ class SelectOptionAddRowTable extends StatefulWidget {
 
 class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
   // Dropdown values
-  String reason = "Marketing";
-  List<String> reasonOptions = [
-    "Marketing",
-    "Personnel",
-    "Working Capital",
-    "Inventory"
-  ];
+  late String reason;
+  late List<String> reasonOptions;
 
   // Text editing controllers for capturing input
   final TextEditingController descriptionController = TextEditingController();
@@ -25,21 +22,37 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
   // Data for the table
   List<Map<String, String>> tableData = [];
 
-  // Function to add a row to the table
-  void addRowToTable() {
-    setState(() {
-      tableData.add({
-        "Reason": reason,
-        "Description": descriptionController.text,
-        "Amount": amountController.text,
-      });
-
-      // Clear the inputs after adding the row
-      descriptionController.clear();
-      amountController.clear();
-    });
+  @override
+  void initState() {
+    super.initState();
+    // Split the string '30 days*60 days*90 days' into a list of options
+    reasonOptions = widget.useOfFunds.split("*");
+    // Set initial value for the dropdown
+    reason = reasonOptions.isNotEmpty ? reasonOptions[0] : "Marketing";
   }
 
+  // Function to add a row to the table
+  void addRowToTable() {
+    if (descriptionController.text.isNotEmpty &&
+        amountController.text.isNotEmpty &&
+        reason.isNotEmpty) {
+      setState(() {
+        tableData.add({
+          "Reason": reason,
+          "Description": descriptionController.text,
+          "Amount": amountController.text,
+        });
+
+        // Clear the inputs after adding the row
+        descriptionController.clear();
+        amountController.clear();
+      });
+    } else {
+      // print("All fields are required.");
+    }
+  }
+
+  // Function to delete a row from the table
   void deleteRow(int index) {
     setState(() {
       tableData.removeAt(index);
@@ -93,41 +106,42 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                 ),
               ),
               Expanded(
-                  flex: 7,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    margin: EdgeInsets.fromLTRB(0, 0, 2, 0),
-                    child: TextField(
-                      controller: descriptionController,
-                      decoration: InputDecoration(
-                        hintText: "Description",
-                        border: InputBorder.none,
-                        filled: true,
-                        fillColor: const Color.fromARGB(255, 229, 229, 229),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(0),
-                            bottomRight: Radius.circular(0),
-                          ),
-                          borderSide: BorderSide.none,
+                flex: 7,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  margin: EdgeInsets.fromLTRB(0, 0, 2, 0),
+                  child: TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(
+                      hintText: "Description",
+                      border: InputBorder.none,
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 229, 229, 229),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(0),
+                          bottomRight: Radius.circular(0),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(0),
-                            bottomRight: Radius.circular(0),
-                          ),
-                          borderSide: BorderSide.none,
-                        ),
+                        borderSide: BorderSide.none,
                       ),
-                      keyboardType: TextInputType.text,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(0),
+                          bottomRight: Radius.circular(0),
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
-                  )),
+                    keyboardType: TextInputType.text,
+                  ),
+                ),
+              ),
               Expanded(
                 flex: 3,
                 child: Container(
@@ -162,6 +176,10 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                       ),
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter
+                          .digitsOnly, // Allow only numbers
+                    ],
                   ),
                 ),
               ),
@@ -212,7 +230,7 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                             child: Text(tableData[index]['Description'] ?? '')),
                         Expanded(
                             flex: 2,
-                            child: Text(tableData[index]['Amount'] ?? '')),
+                            child: Text('\$${tableData[index]['Amount']}')),
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.blueGrey),
                           onPressed: () => deleteRow(index),

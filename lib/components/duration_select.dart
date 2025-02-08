@@ -1,37 +1,43 @@
 import 'package:flutter/material.dart';
 
 class CustomDurationSelect extends StatefulWidget {
-  const CustomDurationSelect({super.key});
+  final String repaymentDelay;
+  const CustomDurationSelect({super.key, required this.repaymentDelay});
 
   @override
   State<CustomDurationSelect> createState() => _CustomDurationSelectState();
 }
 
 class _CustomDurationSelectState extends State<CustomDurationSelect> {
-  String repaymentDelay = "30 days";
-  List<String> repaymentOptions = ["30 days", "60 days", "90 days"];
+  late String repaymentDelay; // This will store the currently selected value
+  late List<String> repaymentOptions; // This will store the available options
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize repaymentDelay and split the string into repaymentOptions
+    repaymentDelay = widget.repaymentDelay
+        .split("*")[0]; // Set the default value to the first option
+    repaymentOptions = widget.repaymentDelay.split("*");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      // width: 150,
-      padding: EdgeInsets.symmetric(horizontal: 12), // Padding inside container
+      padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        border: Border.all(
-            color:
-                Colors.transparent), // Border transparent to make it invisible
+        border: Border.all(color: Colors.transparent),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
           bottomLeft: Radius.zero,
           bottomRight: Radius.zero,
-        ), // Border radius on the container
-        color: const Color.fromARGB(255, 229, 229, 229), // Background color
+        ),
+        color: const Color.fromARGB(255, 229, 229, 229),
       ),
       child: DropdownButton<String>(
-        value: repaymentDelay,
-        // icon: Icon(Icons.arrow_drop_down, color: Colors.blue), // Icon color
-        underline: SizedBox(), // Removes the underline
+        value: repaymentDelay, // Use the current selected value
+        underline: SizedBox(),
         items: repaymentOptions.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
@@ -40,7 +46,7 @@ class _CustomDurationSelectState extends State<CustomDurationSelect> {
         }).toList(),
         onChanged: (newValue) {
           setState(() {
-            repaymentDelay = newValue!;
+            repaymentDelay = newValue!; // Update the selected value
           });
         },
       ),

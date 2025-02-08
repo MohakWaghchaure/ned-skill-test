@@ -35,13 +35,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<dynamic> apiData = []; // Variable to store data from child
+  List<dynamic> apiData = [];
+  String enteredRevenue = '0';
 
   void handleFetchedData(List<dynamic> data) {
     setState(() {
       // Initialize or update the apiData list with the fetched data
       apiData = data;
     });
+  }
+
+  void updateEnteredRevenue(String revenue) {
+    setState(() {
+      enteredRevenue = revenue;
+    });
+    // print(enteredRevenue);
   }
 
   @override
@@ -78,8 +86,13 @@ class _HomePageState extends State<HomePage> {
                 ApiDataWidget(
                   onDataFetched: handleFetchedData,
                 ),
-                if (apiData.isNotEmpty) CustomFinanceCard(apiData: apiData),
-                CustomResultCard(),
+                if (apiData.isNotEmpty)
+                  CustomFinanceCard(
+                      apiData: apiData,
+                      updateEnteredRevenue: updateEnteredRevenue),
+                CustomResultCard(
+                  enteredRevenue: enteredRevenue,
+                ),
               ],
             ),
           )),

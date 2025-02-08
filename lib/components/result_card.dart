@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import intl package for number formatting
 
 class CustomResultCard extends StatefulWidget {
-  const CustomResultCard({super.key});
+  final String enteredRevenue;
+  const CustomResultCard({super.key, required this.enteredRevenue});
 
   @override
   State<CustomResultCard> createState() => _CustomResultCardState();
@@ -10,6 +12,10 @@ class CustomResultCard extends StatefulWidget {
 class _CustomResultCardState extends State<CustomResultCard> {
   @override
   Widget build(BuildContext context) {
+    // Format enteredRevenue with commas
+    final formattedRevenue =
+        NumberFormat('#,###').format(int.tryParse(widget.enteredRevenue) ?? 0);
+
     return Expanded(
       flex: 5,
       child: Container(
@@ -47,15 +53,13 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'Annual Business Revenue',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
                 ),
                 Text(
-                  '\$250,000',
+                  '\$$formattedRevenue', // Display the formatted revenue
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -69,7 +73,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'Funding Amount',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
@@ -77,7 +80,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   '\$60,000',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -91,7 +93,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'Fees',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
@@ -99,7 +100,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   '(50%) \$30,000',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -121,7 +121,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'Total Revenue Share',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
@@ -129,7 +128,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   '\$90,000',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -143,7 +141,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'Expected transfers',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
@@ -151,7 +148,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   '47',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -165,7 +161,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'Expected completion date',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[700],
                   ),
@@ -173,7 +168,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
                 Text(
                   'January 24, 2023',
                   style: TextStyle(
-                    // fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
                   ),
