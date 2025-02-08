@@ -13,8 +13,65 @@ class _CustomResultCardState extends State<CustomResultCard> {
   @override
   Widget build(BuildContext context) {
     // Format enteredRevenue with commas
-    final formattedRevenue =
-        NumberFormat('#,###').format(int.tryParse(widget.enteredRevenue) ?? 0);
+    final revenue = int.tryParse(widget.enteredRevenue) ?? 0;
+    double feePercentage = 0.6;
+
+    final formattedRevenue = NumberFormat('#,###').format(revenue);
+
+    // Calculate Funding Amount (formattedRevenue / 3) and format it
+    final fundingAmount = (revenue) / 3;
+    final formattedFundingAmount = NumberFormat('#,###').format(fundingAmount);
+
+    // Calculate the fee amount (enteredRevenue * feePercentage)
+    final feeAmount = revenue * feePercentage;
+    final formattedFeeAmount = NumberFormat('#,###').format(feeAmount);
+
+    // Calculate the fee amount (enteredRevenue * feePercentage)
+    final totalRevenueShared = fundingAmount + feeAmount;
+    final formattedtotalRevenue =
+        NumberFormat('#,###').format(totalRevenueShared);
+
+    // Calculate Expected Transfers based on frequency
+    String frequency = 'weekly';
+    int repaymentDelayDays = 30;
+    double expectedTransfers;
+    if (frequency == 'weekly') {
+      expectedTransfers = (totalRevenueShared * 52) / (revenue * feePercentage);
+    } else if (frequency == 'monthly') {
+      expectedTransfers = (totalRevenueShared * 12) / (revenue * feePercentage);
+    } else {
+      expectedTransfers = 0;
+    }
+
+    // Round up the value
+    expectedTransfers =
+        expectedTransfers.isNaN ? 0 : expectedTransfers.ceilToDouble();
+    final formattedExpectedTransfers = expectedTransfers.toString();
+
+    // Calculate Expected Completion Date
+    DateTime currentDate = DateTime.now();
+    DateTime expectedCompletionDate;
+
+    if (frequency == 'weekly') {
+      expectedCompletionDate =
+          currentDate.add(Duration(days: (expectedTransfers.toInt() * 7)));
+    } else if (frequency == 'monthly') {
+      expectedCompletionDate = DateTime(
+        currentDate.year,
+        currentDate.month + expectedTransfers.toInt(),
+        currentDate.day,
+      );
+    } else {
+      expectedCompletionDate = currentDate;
+    }
+
+    // Add repayment delay (in days) to the expected completion date
+    expectedCompletionDate =
+        expectedCompletionDate.add(Duration(days: repaymentDelayDays));
+
+    // Format expected completion date
+    String formattedExpectedCompletionDate =
+        DateFormat('MMMM dd, yyyy').format(expectedCompletionDate);
 
     return Expanded(
       flex: 5,
@@ -78,7 +135,7 @@ class _CustomResultCardState extends State<CustomResultCard> {
                   ),
                 ),
                 Text(
-                  '\$60,000',
+                  '\$$formattedFundingAmount',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -98,7 +155,7 @@ class _CustomResultCardState extends State<CustomResultCard> {
                   ),
                 ),
                 Text(
-                  '(50%) \$30,000',
+                  '($feePercentage) \$$formattedFeeAmount',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -126,7 +183,7 @@ class _CustomResultCardState extends State<CustomResultCard> {
                   ),
                 ),
                 Text(
-                  '\$90,000',
+                  '\$$formattedtotalRevenue',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -146,7 +203,7 @@ class _CustomResultCardState extends State<CustomResultCard> {
                   ),
                 ),
                 Text(
-                  '47',
+                  formattedExpectedTransfers,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -166,7 +223,7 @@ class _CustomResultCardState extends State<CustomResultCard> {
                   ),
                 ),
                 Text(
-                  'January 24, 2023',
+                  formattedExpectedCompletionDate,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
