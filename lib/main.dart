@@ -71,7 +71,6 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         padding: EdgeInsets.all(0),
         color: const Color.fromARGB(255, 196, 196, 196),
-        // height: 5000,
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 10),

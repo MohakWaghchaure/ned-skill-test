@@ -183,21 +183,15 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                   ),
                 ),
               ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: addRowToTable,
-                  child: Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.all(0),
-                    height: 20,
-                    width: 20,
-                    child: Image(
-                      image: AssetImage("assets/images/add_icon.png"),
-                      height: 20,
-                      width: 20,
-                    ),
-                  ),
+              IconButton(
+                icon: Image.asset(
+                  'assets/images/add_icon.png',
+                  width: 20,
+                  height: 20,
                 ),
+                onPressed: addRowToTable,
+                padding: EdgeInsets.zero, // To remove the default padding
+                alignment: Alignment.center, // Align the icon in the center
               ),
             ],
           ),
@@ -211,8 +205,8 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
             ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 300),
+            child: Container(
+              padding: EdgeInsets.all(0),
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: tableData.length,
@@ -232,7 +226,11 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                             flex: 2,
                             child: Text('\$${tableData[index]['Amount']}')),
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.blueGrey),
+                          icon: Image.asset(
+                            'assets/images/delete_icon.png',
+                            width: 24,
+                            height: 24,
+                          ),
                           onPressed: () => deleteRow(index),
                         ),
                       ],
