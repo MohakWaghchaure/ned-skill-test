@@ -8,9 +8,15 @@ import 'package:ned_skill_test/components/select_table.dart';
 class CustomFinanceCard extends StatefulWidget {
   final List<dynamic> apiData;
   final Function(String) updateEnteredRevenue;
+  final Function(String) updatedFrequency;
+  final Function(String) repaymentDelay;
 
   const CustomFinanceCard(
-      {super.key, required this.apiData, required this.updateEnteredRevenue});
+      {super.key,
+      required this.apiData,
+      required this.updateEnteredRevenue,
+      required this.updatedFrequency,
+      required this.repaymentDelay});
 
   @override
   State<CustomFinanceCard> createState() => _CustomFinanceCardState();
@@ -29,12 +35,12 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
   Map<String, dynamic> revenuePercentageMinData = {};
   Map<String, dynamic> revenuePercentageMaxData = {};
 
-  // Store the entered revenue
   String enteredRevenue = '0';
-
-  // Store the slider value and the max value based on entered revenue
   double sliderValue = 0;
   double maxSliderValue = 0;
+  double revenueSharedPercentage = 0;
+  String selectedFrequency = "";
+  String selectedRepaymentDelay = "";
 
   @override
   void initState() {
@@ -48,14 +54,44 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
     setState(() {
       maxSliderValue =
           revenue / 3; // Max slider value is 1/3 of entered revenue
-      sliderValue = maxSliderValue; // Default slider value
     });
+  }
+
+  void calculateRevenueSharePercentage() {
+    double revenue = double.tryParse(enteredRevenue) ?? 0;
+    double fundingAmount = 25000; // You may want to retrieve this dynamically
+
+    if (revenue > 0 && fundingAmount > 0) {
+      double revenueSharePercentage =
+          ((0.156 / (6.2055 * revenue)) * (fundingAmount * 10) * 100);
+      setState(() {
+        revenueSharedPercentage = revenueSharePercentage;
+      });
+    }
+    // print('Revenue Share Percentage: $revenueSharedPercentage');
+  }
+
+  void onFrequencyChanged(String frequency) {
+    setState(() {
+      selectedFrequency = frequency;
+    });
+    widget.updatedFrequency(frequency);
+    // print('Revenue Share Percentage: $frequency');
+  }
+
+  void onRepaymentDelayChanged(String repaymentDelay) {
+    setState(() {
+      selectedRepaymentDelay = repaymentDelay;
+    });
+    widget.repaymentDelay(repaymentDelay);
+    // print('Revenue Share Percentage: $repaymentDelay');
   }
 
   @override
   Widget build(BuildContext context) {
     var apiData = widget.apiData;
 
+    // Assigning values from the API data
     for (var i = 0; i < apiData.length; i++) {
       if (apiData[i]['name'] == 'desired_fee_percentage') {
         desiredFeePercentage = apiData[i];
@@ -143,7 +179,12 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                 hintText: "250,000",
                 border: InputBorder.none,
                 filled: true,
-                fillColor: const Color.fromARGB(255, 229, 229, 229),
+                fillColor: const Color.fromARGB(
+                  15,
+                  196,
+                  196,
+                  196,
+                ),
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                 enabledBorder: OutlineInputBorder(
@@ -173,6 +214,7 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                 enteredRevenue = value.isEmpty ? '0' : value;
                 enteredRevenueHandler();
                 widget.updateEnteredRevenue(enteredRevenue);
+                calculateRevenueSharePercentage();
               },
             ),
             SizedBox(height: 10),
@@ -189,14 +231,6 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
               maxValue: fundingAmountMaxData.isNotEmpty
                   ? fundingAmountMaxData['value']
                   : 100.0,
-              // enteredRevenue: enteredRevenue,
-              // onSliderChanged: (newValue) {
-              //   setState(() {
-              //     sliderValue = newValue;
-              //     enteredRevenue =
-              //         newValue.toStringAsFixed(0); // Update the TextField
-              //   });
-              // },
             ),
             SizedBox(height: 10),
             Container(
@@ -206,7 +240,8 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
                   Text('Revenue share percentage:'),
                   SizedBox(height: 10, width: 10),
                   Text(
-                    '7.56%',
+                    revenueSharedPercentage
+                        .toStringAsFixed(2), // Formatting the value
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
@@ -220,10 +255,11 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
               padding: EdgeInsets.all(0),
               child: Row(
                 children: [
-                  Text('${revenueSharedFrequencyData['label']}:'),
+                  Text('${revenueSharedFrequencyData['label']}'),
                   SizedBox(height: 10, width: 10),
                   RadioButtons(
-                      revenueFrequency: revenueSharedFrequencyData['value']),
+                      revenueFrequency: revenueSharedFrequencyData['value'],
+                      onFrequencyChanged: onFrequencyChanged),
                 ],
               ),
             ),
@@ -232,10 +268,11 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
               padding: EdgeInsets.all(0),
               child: Row(
                 children: [
-                  Text('${desiredRepaymentDelay['label']}:'),
+                  Text('${desiredRepaymentDelay['label']}'),
                   SizedBox(height: 10, width: 10),
                   CustomDurationSelect(
-                      repaymentDelay: desiredRepaymentDelay['value']),
+                      repaymentDelay: desiredRepaymentDelay['value'],
+                      onRepaymentDelayChanged: onRepaymentDelayChanged),
                 ],
               ),
             ),

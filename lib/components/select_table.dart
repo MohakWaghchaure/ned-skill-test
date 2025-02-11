@@ -81,7 +81,12 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                       topLeft: Radius.circular(10),
                       topRight: Radius.circular(10),
                     ),
-                    color: const Color.fromARGB(255, 229, 229, 229),
+                    color: const Color.fromARGB(
+                      15,
+                      196,
+                      196,
+                      196,
+                    ),
                   ),
                   child: DropdownButton<String>(
                     isExpanded: true,
@@ -109,14 +114,18 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                 flex: 7,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12),
-                  margin: EdgeInsets.fromLTRB(0, 0, 2, 0),
                   child: TextField(
                     controller: descriptionController,
                     decoration: InputDecoration(
                       hintText: "Description",
                       border: InputBorder.none,
                       filled: true,
-                      fillColor: const Color.fromARGB(255, 229, 229, 229),
+                      fillColor: const Color.fromARGB(
+                        15,
+                        196,
+                        196,
+                        196,
+                      ),
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                       enabledBorder: OutlineInputBorder(
@@ -146,14 +155,18 @@ class _SelectOptionAddRowTableState extends State<SelectOptionAddRowTable> {
                 flex: 3,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12),
-                  margin: EdgeInsets.fromLTRB(0, 0, 2, 0),
                   child: TextField(
                     controller: amountController,
                     decoration: InputDecoration(
                       hintText: "Amount",
                       border: InputBorder.none,
                       filled: true,
-                      fillColor: const Color.fromARGB(255, 229, 229, 229),
+                      fillColor: const Color.fromARGB(
+                        15,
+                        196,
+                        196,
+                        196,
+                      ),
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                       enabledBorder: OutlineInputBorder(

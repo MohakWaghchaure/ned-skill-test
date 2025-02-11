@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 
 class RadioButtons extends StatefulWidget {
   final String revenueFrequency;
-  const RadioButtons({super.key, required this.revenueFrequency});
+  final Function(String)
+      onFrequencyChanged; // Callback function to send value outside
+
+  const RadioButtons(
+      {super.key,
+      required this.revenueFrequency,
+      required this.onFrequencyChanged});
 
   @override
   State<RadioButtons> createState() => _RadioButtonsState();
@@ -42,6 +48,9 @@ class _RadioButtonsState extends State<RadioButtons> {
                     revenueSharedFrequency =
                         value.toString(); // Update the selected value
                   });
+
+                  // Call the callback function to send the selected value outside
+                  widget.onFrequencyChanged(revenueSharedFrequency);
                 },
               ),
               Text(freq[0].toUpperCase() +

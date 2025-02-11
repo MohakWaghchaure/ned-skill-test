@@ -12,13 +12,13 @@ class _BottomBarState extends State<BottomBar> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
-      color: Colors.blueGrey[50],
+      // color: const Color.fromARGB(255, 255, 255, 255),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         width: double.infinity,
         height: 100,
         decoration: BoxDecoration(
-          color: Colors.white,
+          // color: const Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(

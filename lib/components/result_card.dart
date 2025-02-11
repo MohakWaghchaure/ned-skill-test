@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import intl package for number formatting
+import 'package:intl/intl.dart';
 
 class CustomResultCard extends StatefulWidget {
   final String enteredRevenue;
-  const CustomResultCard({super.key, required this.enteredRevenue});
+  final String selectedFrequency;
+  final String selectedRepaymentDelay;
+  final double feePercentage;
+
+  const CustomResultCard(
+      {super.key,
+      required this.enteredRevenue,
+      required this.selectedFrequency,
+      required this.selectedRepaymentDelay,
+      required this.feePercentage});
 
   @override
   State<CustomResultCard> createState() => _CustomResultCardState();
@@ -13,8 +22,11 @@ class _CustomResultCardState extends State<CustomResultCard> {
   @override
   Widget build(BuildContext context) {
     // Format enteredRevenue with commas
+
     final revenue = int.tryParse(widget.enteredRevenue) ?? 0;
-    double feePercentage = 0.6;
+    String frequency = widget.selectedFrequency;
+    String repaymentDelayDays = widget.selectedRepaymentDelay;
+    double feePercentage = widget.feePercentage;
 
     final formattedRevenue = NumberFormat('#,###').format(revenue);
 
@@ -32,8 +44,6 @@ class _CustomResultCardState extends State<CustomResultCard> {
         NumberFormat('#,###').format(totalRevenueShared);
 
     // Calculate Expected Transfers based on frequency
-    String frequency = 'weekly';
-    int repaymentDelayDays = 30;
     double expectedTransfers;
     if (frequency == 'weekly') {
       expectedTransfers = (totalRevenueShared * 52) / (revenue * feePercentage);
@@ -66,8 +76,14 @@ class _CustomResultCardState extends State<CustomResultCard> {
     }
 
     // Add repayment delay (in days) to the expected completion date
-    expectedCompletionDate =
-        expectedCompletionDate.add(Duration(days: repaymentDelayDays));
+
+    if (repaymentDelayDays == '30 days') {
+      expectedCompletionDate = expectedCompletionDate.add(Duration(days: 30));
+    } else if (repaymentDelayDays == '60 days') {
+      expectedCompletionDate = expectedCompletionDate.add(Duration(days: 60));
+    } else if (repaymentDelayDays == '90 days') {
+      expectedCompletionDate = expectedCompletionDate.add(Duration(days: 90));
+    }
 
     // Format expected completion date
     String formattedExpectedCompletionDate =

@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 class CustomDurationSelect extends StatefulWidget {
   final String repaymentDelay;
-  const CustomDurationSelect({super.key, required this.repaymentDelay});
+  final Function(String) onRepaymentDelayChanged;
+
+  const CustomDurationSelect(
+      {super.key,
+      required this.repaymentDelay,
+      required this.onRepaymentDelayChanged});
 
   @override
   State<CustomDurationSelect> createState() => _CustomDurationSelectState();
@@ -33,7 +38,12 @@ class _CustomDurationSelectState extends State<CustomDurationSelect> {
           bottomLeft: Radius.zero,
           bottomRight: Radius.zero,
         ),
-        color: const Color.fromARGB(255, 229, 229, 229),
+        color: const Color.fromARGB(
+          15,
+          196,
+          196,
+          196,
+        ),
       ),
       child: DropdownButton<String>(
         value: repaymentDelay, // Use the current selected value
@@ -48,6 +58,9 @@ class _CustomDurationSelectState extends State<CustomDurationSelect> {
           setState(() {
             repaymentDelay = newValue!; // Update the selected value
           });
+
+          // Send the selected value back to the parent widget
+          widget.onRepaymentDelayChanged(repaymentDelay);
         },
       ),
     );

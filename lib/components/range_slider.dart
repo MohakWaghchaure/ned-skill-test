@@ -80,8 +80,18 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
             height: 50,
             width: 80,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(10),
+              color: const Color.fromARGB(
+                15,
+                196,
+                196,
+                196,
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(0),
+              ),
             ),
             child: Center(
               child: Text(

@@ -37,26 +37,68 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<dynamic> apiData = [];
   String enteredRevenue = '0';
+  String selectedFrequency = "monthly";
+  String selectedRepaymentDelay = "30";
+  double receivedFeePercentage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the fee percentage on app load
+    feePercentage();
+  }
 
   void handleFetchedData(List<dynamic> data) {
     setState(() {
-      // Initialize or update the apiData list with the fetched data
       apiData = data;
     });
+    // Update fee percentage after data is fetched
+    feePercentage();
   }
 
   void updateEnteredRevenue(String revenue) {
     setState(() {
       enteredRevenue = revenue;
     });
-    // print(enteredRevenue);
+  }
+
+  void updatedFrequency(String frequency) {
+    setState(() {
+      selectedFrequency = frequency;
+    });
+  }
+
+  void repaymentDelay(String repaymentDelay) {
+    setState(() {
+      selectedRepaymentDelay = repaymentDelay;
+    });
+  }
+
+  void feePercentage() {
+    if (apiData.isNotEmpty) {
+      var feeData = apiData.firstWhere(
+        (element) => element['name'] == 'desired_fee_percentage',
+        orElse: () => null,
+      );
+      if (feeData != null) {
+        setState(() {
+          // Parse the fee percentage to a double
+          receivedFeePercentage = double.tryParse(feeData['value']) ?? 0.6;
+        });
+      }
+    } else {
+      setState(() {
+        receivedFeePercentage = 0.6; // Default value if no data
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 241, 241, 241),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        elevation: 10,
         leading: Container(
           alignment: Alignment.center,
           margin: EdgeInsets.all(0),
@@ -70,7 +112,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         padding: EdgeInsets.all(0),
-        color: const Color.fromARGB(255, 196, 196, 196),
+        color: const Color.fromARGB(15, 196, 196, 196),
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 10),
@@ -88,10 +130,14 @@ class _HomePageState extends State<HomePage> {
                 if (apiData.isNotEmpty)
                   CustomFinanceCard(
                       apiData: apiData,
-                      updateEnteredRevenue: updateEnteredRevenue),
+                      updateEnteredRevenue: updateEnteredRevenue,
+                      updatedFrequency: updatedFrequency,
+                      repaymentDelay: repaymentDelay),
                 CustomResultCard(
-                  enteredRevenue: enteredRevenue,
-                ),
+                    enteredRevenue: enteredRevenue,
+                    selectedFrequency: selectedFrequency,
+                    selectedRepaymentDelay: selectedRepaymentDelay,
+                    feePercentage: receivedFeePercentage),
               ],
             ),
           )),
