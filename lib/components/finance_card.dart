@@ -58,7 +58,6 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
         revenueSharedPercentage = revenueSharePercentage;
       });
     }
-    // print('Revenue Share Percentage: $revenueSharedPercentage');
   }
 
   void onFrequencyChanged(String frequency) {
@@ -66,7 +65,6 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
       selectedFrequency = frequency;
     });
     widget.updatedFrequency(frequency);
-    // print('Revenue Share Percentage: $frequency');
   }
 
   void onRepaymentDelayChanged(String repaymentDelay) {
@@ -74,12 +72,7 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
       selectedRepaymentDelay = repaymentDelay;
     });
     widget.repaymentDelay(repaymentDelay);
-    // print('Revenue Share Percentage: $repaymentDelay');
   }
-
-  // void selectedFundingAmount(double selectedFundingAmount) {
-  //   print(selectedFundingAmount.toInt());
-  // }
 
   @override
   Widget build(BuildContext context) {

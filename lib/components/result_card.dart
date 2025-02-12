@@ -27,9 +27,7 @@ class _CustomResultCardState extends State<CustomResultCard> {
 
     final revenue = int.tryParse(widget.enteredRevenue) ?? 0;
     final selectedFundingAmount = widget.selectedFundingAmount ?? 0;
-    final fundingAmount = (revenue) / 3;
-
-    print(selectedFundingAmount);
+    // final fundingAmount = (revenue) / 3;
 
     String frequency = widget.selectedFrequency;
     String repaymentDelayDays = widget.selectedRepaymentDelay;
