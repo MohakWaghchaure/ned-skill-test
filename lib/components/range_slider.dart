@@ -7,12 +7,13 @@ class CustomRangeSlider extends StatefulWidget {
   final String enterdRevenue;
   final Function(double) selectedFundingAmount;
 
-  const CustomRangeSlider(
-      {super.key,
-      required this.minValue,
-      required this.maxValue,
-      required this.enterdRevenue,
-      required this.selectedFundingAmount});
+  const CustomRangeSlider({
+    super.key,
+    required this.minValue,
+    required this.maxValue,
+    required this.enterdRevenue,
+    required this.selectedFundingAmount,
+  });
 
   @override
   State<CustomRangeSlider> createState() => _CustomRangeSliderState();
@@ -23,46 +24,49 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
   late double maxValue;
   late double enterdRevenue;
   late double sliderValue;
-  late bool
-      isSliderEnabled; // To track whether the slider should be enabled or not
+  late bool isSliderEnabled;
 
   @override
   void initState() {
     super.initState();
 
-    // Safely parse min and max values from the widget
     minValue = double.tryParse(widget.minValue) ?? 0;
     maxValue = double.tryParse(widget.maxValue) ?? 25000;
     enterdRevenue = double.tryParse(widget.enterdRevenue) ?? 0;
 
-    // Set slider limits based on revenue
     _setSliderLimits();
-
-    // Initialize slider value after setting limits
-    sliderValue = maxValue;
+    sliderValue = minValue; // Initialize to min value
   }
 
-  // Method to adjust slider limits based on revenue
+  @override
+  void didUpdateWidget(covariant CustomRangeSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.enterdRevenue != oldWidget.enterdRevenue) {
+      enterdRevenue = double.tryParse(widget.enterdRevenue) ?? 0;
+      _setSliderLimits();
+
+      setState(() {
+        sliderValue = minValue; // Reset slider to minimum when revenue changes
+      });
+    }
+  }
+
   void _setSliderLimits() {
-    minValue = 25000; // Min value is always 25,000
-    isSliderEnabled =
-        enterdRevenue > 25000; // Enable slider only if revenue is > 25000
+    minValue = 25000;
+    isSliderEnabled = enterdRevenue > 25000;
 
-    if (enterdRevenue > 25000) {
-      // If revenue exceeds 25,000, set maxValue to one-third of revenue
+    if (isSliderEnabled) {
       maxValue = enterdRevenue / 3;
-
-      // Ensure maxValue is greater than minValue
       if (maxValue <= minValue) {
         maxValue = minValue + 1000;
       }
     } else {
-      // If revenue is less than or equal to 25,000, disable the slider
       maxValue = minValue;
+      sliderValue = maxValue;
     }
   }
 
-  // Formatting numbers for display
   String formatNumber(double number) {
     final formatter = NumberFormat('#,###');
     return '\$${formatter.format(number)}';
@@ -70,29 +74,21 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
 
   @override
   Widget build(BuildContext context) {
-    // Track enterdRevenue dynamically as it might change
-    enterdRevenue = double.parse(widget.enterdRevenue);
-    _setSliderLimits(); // Update slider limits based on current revenue
-
     return Padding(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.symmetric(vertical: 5),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        formatNumber(minValue), // Remove decimals
-                      ),
-                      Text(
-                        formatNumber(maxValue), // Remove decimals
-                      ),
+                      Text(formatNumber(minValue)),
+                      Text(formatNumber(maxValue)),
                     ],
                   ),
                   Container(
@@ -109,7 +105,7 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
                               });
                               widget.selectedFundingAmount(value);
                             }
-                          : null, // Disables the slider if maxValue == minValue
+                          : null,
                       activeColor: Colors.blue,
                       inactiveColor: Colors.grey,
                       thumbColor: Colors.blue,
@@ -120,28 +116,20 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(0),
-            margin: EdgeInsets.only(left: 20),
+            margin: const EdgeInsets.only(left: 20),
             height: 50,
             width: 80,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(
-                15,
-                196,
-                196,
-                196,
-              ),
-              borderRadius: BorderRadius.only(
+              color: const Color.fromARGB(15, 196, 196, 196),
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(0),
               ),
             ),
             child: Center(
               child: Text(
-                formatNumber(sliderValue), // Display dynamic slider value
-                style: TextStyle(
+                formatNumber(sliderValue),
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,
                 ),
