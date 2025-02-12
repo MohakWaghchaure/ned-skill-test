@@ -6,13 +6,15 @@ class CustomResultCard extends StatefulWidget {
   final String selectedFrequency;
   final String selectedRepaymentDelay;
   final double feePercentage;
+  final double selectedFundingAmount;
 
   const CustomResultCard(
       {super.key,
       required this.enteredRevenue,
       required this.selectedFrequency,
       required this.selectedRepaymentDelay,
-      required this.feePercentage});
+      required this.feePercentage,
+      required this.selectedFundingAmount});
 
   @override
   State<CustomResultCard> createState() => _CustomResultCardState();
@@ -24,6 +26,11 @@ class _CustomResultCardState extends State<CustomResultCard> {
     // Format enteredRevenue with commas
 
     final revenue = int.tryParse(widget.enteredRevenue) ?? 0;
+    final selectedFundingAmount = widget.selectedFundingAmount ?? 0;
+    final fundingAmount = (revenue) / 3;
+
+    print(selectedFundingAmount);
+
     String frequency = widget.selectedFrequency;
     String repaymentDelayDays = widget.selectedRepaymentDelay;
     double feePercentage = widget.feePercentage;
@@ -31,31 +38,36 @@ class _CustomResultCardState extends State<CustomResultCard> {
     final formattedRevenue = NumberFormat('#,###').format(revenue);
 
     // Calculate Funding Amount (formattedRevenue / 3) and format it
-    final fundingAmount = (revenue) / 3;
-    final formattedFundingAmount = NumberFormat('#,###').format(fundingAmount);
+
+    final formattedFundingAmount =
+        NumberFormat('#,###').format(selectedFundingAmount);
 
     // Calculate the fee amount (enteredRevenue * feePercentage)
     final feeAmount = revenue * feePercentage;
     final formattedFeeAmount = NumberFormat('#,###').format(feeAmount);
 
     // Calculate the fee amount (enteredRevenue * feePercentage)
-    final totalRevenueShared = fundingAmount + feeAmount;
+    final totalRevenueShared = selectedFundingAmount + feeAmount;
     final formattedtotalRevenue =
         NumberFormat('#,###').format(totalRevenueShared);
 
     // Calculate Expected Transfers based on frequency
-    double expectedTransfers;
-    if (frequency == 'weekly') {
-      expectedTransfers = (totalRevenueShared * 52) / (revenue * feePercentage);
-    } else if (frequency == 'monthly') {
-      expectedTransfers = (totalRevenueShared * 12) / (revenue * feePercentage);
-    } else {
-      expectedTransfers = 0;
+    double expectedTransfers = 0;
+    if (totalRevenueShared != 0 && (revenue * feePercentage) != 0) {
+      if (frequency == 'weekly') {
+        expectedTransfers =
+            (totalRevenueShared * 52) / (revenue * feePercentage);
+      } else if (frequency == 'monthly') {
+        expectedTransfers =
+            (totalRevenueShared * 12) / (revenue * feePercentage);
+      }
     }
 
-    // Round up the value
+    // Handle NaN and round up the value
     expectedTransfers =
         expectedTransfers.isNaN ? 0 : expectedTransfers.ceilToDouble();
+
+// Convert to string for display
     final formattedExpectedTransfers = expectedTransfers.toString();
 
     // Calculate Expected Completion Date

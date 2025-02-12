@@ -4,9 +4,15 @@ import 'package:intl/intl.dart';
 class CustomRangeSlider extends StatefulWidget {
   final String minValue;
   final String maxValue;
+  final String enterdRevenue;
+  final Function(double) selectedFundingAmount;
 
   const CustomRangeSlider(
-      {super.key, required this.minValue, required this.maxValue});
+      {super.key,
+      required this.minValue,
+      required this.maxValue,
+      required this.enterdRevenue,
+      required this.selectedFundingAmount});
 
   @override
   State<CustomRangeSlider> createState() => _CustomRangeSliderState();
@@ -15,16 +21,48 @@ class CustomRangeSlider extends StatefulWidget {
 class _CustomRangeSliderState extends State<CustomRangeSlider> {
   late double minValue;
   late double maxValue;
-  late double _sliderValue;
+  late double enterdRevenue;
+  late double sliderValue;
+  late bool
+      isSliderEnabled; // To track whether the slider should be enabled or not
 
   @override
   void initState() {
     super.initState();
-    minValue = double.parse(widget.minValue);
-    maxValue = double.parse(widget.maxValue);
-    _sliderValue = maxValue; // Set initial slider value to maxValue
+
+    // Safely parse min and max values from the widget
+    minValue = double.tryParse(widget.minValue) ?? 0;
+    maxValue = double.tryParse(widget.maxValue) ?? 25000;
+    enterdRevenue = double.tryParse(widget.enterdRevenue) ?? 0;
+
+    // Set slider limits based on revenue
+    _setSliderLimits();
+
+    // Initialize slider value after setting limits
+    sliderValue = maxValue;
   }
 
+  // Method to adjust slider limits based on revenue
+  void _setSliderLimits() {
+    minValue = 25000; // Min value is always 25,000
+    isSliderEnabled =
+        enterdRevenue > 25000; // Enable slider only if revenue is > 25000
+
+    if (enterdRevenue > 25000) {
+      // If revenue exceeds 25,000, set maxValue to one-third of revenue
+      maxValue = enterdRevenue / 3;
+
+      // Ensure maxValue is greater than minValue
+      if (maxValue <= minValue) {
+        maxValue = minValue + 1000;
+      }
+    } else {
+      // If revenue is less than or equal to 25,000, disable the slider
+      maxValue = minValue;
+    }
+  }
+
+  // Formatting numbers for display
   String formatNumber(double number) {
     final formatter = NumberFormat('#,###');
     return '\$${formatter.format(number)}';
@@ -32,6 +70,10 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
 
   @override
   Widget build(BuildContext context) {
+    // Track enterdRevenue dynamically as it might change
+    enterdRevenue = double.parse(widget.enterdRevenue);
+    _setSliderLimits(); // Update slider limits based on current revenue
+
     return Padding(
       padding: EdgeInsets.all(8),
       child: Row(
@@ -57,14 +99,17 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
                     width: double.infinity,
                     padding: EdgeInsets.zero,
                     child: Slider(
-                      value: _sliderValue,
+                      value: sliderValue,
                       min: minValue,
                       max: maxValue,
-                      onChanged: (value) {
-                        setState(() {
-                          _sliderValue = value;
-                        });
-                      },
+                      onChanged: isSliderEnabled
+                          ? (value) {
+                              setState(() {
+                                sliderValue = value;
+                              });
+                              widget.selectedFundingAmount(value);
+                            }
+                          : null, // Disables the slider if maxValue == minValue
                       activeColor: Colors.blue,
                       inactiveColor: Colors.grey,
                       thumbColor: Colors.blue,
@@ -95,7 +140,7 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
             ),
             child: Center(
               child: Text(
-                formatNumber(_sliderValue), // Display dynamic slider value
+                formatNumber(sliderValue), // Display dynamic slider value
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,

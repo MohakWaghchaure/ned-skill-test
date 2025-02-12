@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   String selectedFrequency = "monthly";
   String selectedRepaymentDelay = "30";
   double receivedFeePercentage = 0;
+  double selectedSliderValue = 25000;
 
   @override
   void initState() {
@@ -93,6 +94,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void selectedFundingAmount(double selectedFundingAmount) {
+    setState(() {
+      selectedSliderValue = selectedFundingAmount; // Default value if no data
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,12 +139,14 @@ class _HomePageState extends State<HomePage> {
                       apiData: apiData,
                       updateEnteredRevenue: updateEnteredRevenue,
                       updatedFrequency: updatedFrequency,
-                      repaymentDelay: repaymentDelay),
+                      repaymentDelay: repaymentDelay,
+                      selectedFundingAmount: selectedFundingAmount),
                 CustomResultCard(
                     enteredRevenue: enteredRevenue,
                     selectedFrequency: selectedFrequency,
                     selectedRepaymentDelay: selectedRepaymentDelay,
-                    feePercentage: receivedFeePercentage),
+                    feePercentage: receivedFeePercentage,
+                    selectedFundingAmount: selectedSliderValue),
               ],
             ),
           )),

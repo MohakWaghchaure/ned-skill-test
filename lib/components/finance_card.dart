@@ -10,13 +10,15 @@ class CustomFinanceCard extends StatefulWidget {
   final Function(String) updateEnteredRevenue;
   final Function(String) updatedFrequency;
   final Function(String) repaymentDelay;
+  final Function(double) selectedFundingAmount;
 
   const CustomFinanceCard(
       {super.key,
       required this.apiData,
       required this.updateEnteredRevenue,
       required this.updatedFrequency,
-      required this.repaymentDelay});
+      required this.repaymentDelay,
+      required this.selectedFundingAmount});
 
   @override
   State<CustomFinanceCard> createState() => _CustomFinanceCardState();
@@ -36,8 +38,6 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
   Map<String, dynamic> revenuePercentageMaxData = {};
 
   String enteredRevenue = '0';
-  double sliderValue = 0;
-  double maxSliderValue = 0;
   double revenueSharedPercentage = 0;
   String selectedFrequency = "";
   String selectedRepaymentDelay = "";
@@ -45,16 +45,6 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
   @override
   void initState() {
     super.initState();
-    // Initialize values based on enteredRevenue
-    enteredRevenueHandler();
-  }
-
-  void enteredRevenueHandler() {
-    double revenue = double.tryParse(enteredRevenue) ?? 0;
-    setState(() {
-      maxSliderValue =
-          revenue / 3; // Max slider value is 1/3 of entered revenue
-    });
   }
 
   void calculateRevenueSharePercentage() {
@@ -86,6 +76,10 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
     widget.repaymentDelay(repaymentDelay);
     // print('Revenue Share Percentage: $repaymentDelay');
   }
+
+  // void selectedFundingAmount(double selectedFundingAmount) {
+  //   print(selectedFundingAmount.toInt());
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +206,6 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
               ],
               onChanged: (value) {
                 enteredRevenue = value.isEmpty ? '0' : value;
-                enteredRevenueHandler();
                 widget.updateEnteredRevenue(enteredRevenue);
                 calculateRevenueSharePercentage();
               },
@@ -225,13 +218,14 @@ class _CustomFinanceCardState extends State<CustomFinanceCard> {
             ),
             SizedBox(height: 10),
             CustomRangeSlider(
-              minValue: fundingAmountMinData.isNotEmpty
-                  ? fundingAmountMinData['value']
-                  : 0.0,
-              maxValue: fundingAmountMaxData.isNotEmpty
-                  ? fundingAmountMaxData['value']
-                  : 100.0,
-            ),
+                minValue: fundingAmountMinData.isNotEmpty
+                    ? fundingAmountMinData['value']
+                    : 0.0,
+                maxValue: fundingAmountMaxData.isNotEmpty
+                    ? fundingAmountMaxData['value']
+                    : 100.0,
+                enterdRevenue: enteredRevenue,
+                selectedFundingAmount: widget.selectedFundingAmount),
             SizedBox(height: 10),
             Container(
               padding: EdgeInsets.all(0),
